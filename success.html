@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,37 +11,29 @@
         <h1 id="successHeader">Thank You!</h1>
         <p id="successMessage">Your donation was successful.</p>
         <p id="sessionId"></p>
-        <a href="https://7222clock.com">Back to 72/22 Clock</a>
+        <a href="/">Back to 72/22 Clock</a>
     </div>
     <footer>
         <p>© 2025 7222clock.com <span class="copyright-tooltip">All Rights Reserved. Unauthorized use prohibited.</span></p>
     </footer>
     <script>
-        // Get the session ID from the URL query parameter
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session_id');
-        
-        if (sessionId) {
-            // Display the session ID
+
+        if (!sessionId) {
+            window.location.href = '/';
+        } else {
             document.getElementById('sessionId').textContent = `Transaction ID: ${sessionId}`;
-            
-            // Verify the payment status by calling the test-session endpoint
-            fetch(`/test-session/${sessionId}`)
-                .then(response => response.json())
-                .then(data => {
+            fetch(`/test-session/${encodeURIComponent(sessionId)}`)
+                .then((response) => response.json())
+                .then((data) => {
                     if (data.payment_status !== 'paid') {
-                        // If the payment wasn't successful, redirect to index.html
-                        window.location.href = 'https://7222clock.com';
+                        window.location.href = '/';
                     }
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error('Error verifying payment status:', error);
-                    // On error, redirect to index.html as a fallback
-                    window.location.href = 'https://7222clock.com';
                 });
-        } else {
-            // If no session ID, redirect to index.html
-            window.location.href = 'https://7222clock.com';
         }
     </script>
 </body>
