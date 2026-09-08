@@ -40,6 +40,11 @@ app.get('/stripe-config.js', (req, res) => {
   res.send(`window.STRIPE_PUBLISHABLE_KEY = ${JSON.stringify(stripePublishable)};`);
 });
 
+app.get('/favicon.ico', (req, res) => {
+  res.type('image/jpeg');
+  res.sendFile(path.join(__dirname, 'images', 'favicon7222.jpeg'));
+});
+
 app.get('/success', (req, res) => {
   res.sendFile(path.join(__dirname, 'success.html'));
 });
