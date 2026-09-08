@@ -5,7 +5,7 @@ const path = require('path');
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 const stripePublishable =
   process.env.STRIPE_PUBLISHABLE_KEY ||
-  'pk_live_51RFpQhKPIr5mBIf30u1030sWukrw4eqfd8jlMVrGQ5un6H9TL8O7Iz1lHa5s27AxZ4XInvJRblgd94yzAcv0idIk00R8vLeFAG';
+  'pk_test_51RFpQhKPIr5mBIf3A0LICBUWQjj0zTVdKHmMp7Wq6DuzGZnv5vtzgVotX6Jvas9PTlqgdaoGjryGnml6sq2AtbFe00HoUxAN5R';
 
 const stripe = require('stripe')(stripeSecret);
 const app = express();
