@@ -1,4 +1,4 @@
-/* Ensure box-sizing is applied globally */
+﻿/* Ensure box-sizing is applied globally */
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -347,17 +347,62 @@ button:hover {
   animation: fadeTooltip 1s ease-in-out;
 }
 
-/* Stripe button styling (inside payment-box) */
+/* Stripe checkout (inside payment-box) */
 .payment-box {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 10px;
+  gap: 10px;
+  padding: 14px;
 }
 
-.payment-box stripe-buy-button {
+.amount-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.amount-btn {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #00A1D6;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.amount-btn.selected,
+.amount-btn:hover {
+  background: #00A1D6;
+  color: #000;
+}
+
+.stripe-checkout-btn {
   width: 100%;
-  max-width: 320px;
+  max-width: 280px;
+  background: #635BFF;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.stripe-checkout-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.stripe-error {
+  color: #ff6b6b;
+  font-size: 13px;
+  margin: 0;
+  max-width: 280px;
 }
 
 /* Footer styling */

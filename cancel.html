@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,18 +10,15 @@
     <div class="container">
         <h1>Payment Canceled</h1>
         <p>You canceled the donation. Redirecting back to the main page...</p>
+        <a href="/">Back now</a>
     </div>
     <footer>
         <p>© 2025 7222clock.com <span class="copyright-tooltip">All Rights Reserved. Unauthorized use prohibited.</span></p>
     </footer>
     <script>
-        // Clear sessionStorage flags to prevent double redirect
-        sessionStorage.removeItem('checkoutInitiated');
-        sessionStorage.removeItem('checkoutSessionId');
-        // Redirect to index.html after a brief delay
         setTimeout(() => {
-            window.location.href = 'https://7222clock.com';
-        }, 2000); // 2-second delay to show the message
+            window.location.href = '/';
+        }, 2000);
     </script>
 </body>
 </html>
