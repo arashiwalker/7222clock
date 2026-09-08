@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>72/22 Clock</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="images/favicon7222.jpg">
+    <meta property="og:title" content="72/22 Clock">
+    <meta property="og:description" content="Discover the Mirtha, a new way to measure time with the 72/22 Clock.">
+    <meta property="og:image" content="images/favicon7222.jpg">
+    <meta property="og:url" content="https://7222clock.com">
+    <meta property="og:type" content="website">
+    <meta name="twitter:image" content="images/favicon7222.jpg">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/jpeg" href="images/favicon7222.jpg">
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="clock-section">
+                <div class="clock-container">
+                    <canvas id="clockCanvas"></canvas>
+                </div>
+                <div class="digital-clock">
+                    <div class="flip-container">
+                        <span class="huor" id="huor">00</span><span class="colon">:</span><span class="minit" id="minit">00</span><span class="colon">:</span><span class="mirtha" id="mirtha">00</span>
+                    </div>
+                </div>
+            </div>
+            <div class="info-section">
+                <div class="info-box">
+                    <div class="interval-description">
+                        <p class="mirtha-intro">72/22 Clock introduces the Mirtha. Replacement of the Second</p>
+                        <ul>
+                            <li><strong class="mirtha">MIRTHA</strong> <span class="desc">1 Mirtha = 72/22 || 3.27273seconds</span></li>
+                            <li><strong class="minit">MINIT</strong> <span class="desc">1 Minit = 22 Mirthas</span></li>
+                            <li><strong class="huor">HUOR</strong> <span class="desc">1 Huor = 50 Minits</span></li>
+                        </ul>
+                        <button id="toggleSound">🔊 Sound: On</button>
+                    </div>
+                </div>
+                <div class="payment-box">
+                    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+                    <stripe-buy-button
+                      buy-button-id="buy_btn_1RUluXKPIr5mBIf3UKzaKgeV"
+                      publishable-key="pk_live_51RFpQhKPIr5mBIf30u1030sWukrw4eqfd8jlMVrGQ5un6H9TL8O7Iz1lHa5s27AxZ4XInvJRblgd94yzAcv0idIk00R8vLeFAG"
+                    >
+                    </stripe-buy-button>
+                </div>
+                <div class="donation-box">
+                    <p class="donate-label">Donate</p>
+                    <div class="crypto-container">
+                        <div class="crypto-card" onclick="copyAddress(this, 'bc1qhm73zj7hyjkz3jt0l6y6etaypu6ghcr7tkn57f')">
+                            <div class="crypto-header">
+                                <img src="images/btc-logo.png" alt="Bitcoin" class="crypto-icon">
+                                <strong class="crypto-name bitcoin">Bitcoin</strong>
+                            </div>
+                            <span class="crypto-address">bc1qhm73zj7hyjkz3jt0l6y6etaypu6ghcr7tkn57f</span>
+                            <img src="images/btc QR.jpeg" alt="Bitcoin QR Code" class="crypto-qr">
+                        </div>
+                        <div class="crypto-card" onclick="copyAddress(this, 'F2KVfuETeNo6grEJC3ULs1n7c8xWswCx5hKWTKxYGE8J')">
+                            <div class="crypto-header">
+                                <img src="images/sol-logo.png" alt="Solana" class="crypto-icon">
+                                <strong class="crypto-name solana">Solana</strong>
+                            </div>
+                            <span class="crypto-address">F2KVfuETeNo6grEJC3ULs1n7c8xWswCx5hKWTKxYGE8J</span>
+                            <img src="images/sol QR.jpeg" alt="Solana QR Code" class="crypto-qr">
+                        </div>
+                        <div class="crypto-card" onclick="copyAddress(this, '0x49509058764F40f9A4B7183b466B8d5c4ae2aa8F')">
+                            <div class="crypto-header">
+                                <img src="images/eth-logo.png" alt="Ethereum" class="crypto-icon">
+                                <strong class="crypto-name ethereum">Ethereum</strong>
+                            </div>
+                            <span class="crypto-address">0x49509058764F40f9A4B7183b466B8d5c4ae2aa8F</span>
+                            <img src="images/eth QR.jpeg" alt="Ethereum QR Code" class="crypto-qr">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 7222clock.com <span class="copyright-tooltip">All Rights Reserved. Unauthorized use prohibited.</span></p>
+    </footer>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="clock.js"></script>
+    <script>
+        console.log('MirthaNode: Script loaded');
+        function copyAddress(element, address) {
+            navigator.clipboard.writeText(address).then(() => {
+                const tooltip = document.createElement('span');
+                tooltip.textContent = 'Copied!';
+                tooltip.className = 'copy-tooltip';
+                element.appendChild(tooltip);
+                setTimeout(() => tooltip.remove(), 1000);
+            }).catch(err => console.error('MirthaNode: Copy failed:', err));
+        }
+
+        console.log('MirthaNode: Initializing Stripe...');
+        const stripe = Stripe('pk_test_51RFpQhKPIr5mBIf3A0LICBUWQjj0zTVdKHmMp7Wq6DuzGZnv5vtzgVotX6Jvas9PTlqgdaoGjryGnml6sq2AtbFe00HoUxAN5R');
+        console.log('MirthaNode: Stripe initialized');
+
+        const stripeButton = document.getElementById('stripeCheckoutButton');
+        const stripeErrorMessage = document.getElementById('stripeErrorMessage');
+
+        if (stripeButton) {
+            console.log('MirthaNode: Stripe button found');
+            stripeButton.addEventListener('click', async () => {
+                console.log('MirthaNode: Stripe button clicked');
+                if (sessionStorage.getItem('checkoutInitiated')) {
+                    console.log('MirthaNode: Checkout already initiated, skipping...');
+                    return;
+                }
+
+                try {
+                    const testCookie = await fetch('https://js.stripe.com/v3/', { method: 'HEAD' }).catch(() => null);
+                    if (!testCookie) {
+                        throw new Error('Third-party cookies are blocked');
+                    }
+
+                    console.log('MirthaNode: Sending fetch to /create-checkout-session...');
+                    const response = await fetch('/create-checkout-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ amount: 500 })
+                    });
+                    console.log('MirthaNode: Fetch response:', response.status, response.statusText);
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`HTTP error! Status: ${response.status} ${response.statusText} - ${errorText}`);
+                    }
+                    const session = await response.json();
+                    console.log('MirthaNode: Checkout session received:', session);
+                    if (session.id) {
+                        sessionStorage.setItem('checkoutSessionId', session.id);
+                        sessionStorage.setItem('checkoutInitiated', 'true');
+                        console.log('MirthaNode: Redirecting to Stripe Checkout...');
+                        const result = await stripe.redirectToCheckout({ sessionId: session.id });
+                        if (result.error) {
+                            console.error('MirthaNode: Stripe redirect error:', result.error.message);
+                            stripeErrorMessage.textContent = `Stripe error: ${result.error.message}`;
+                            stripeErrorMessage.style.display = 'block';
+                            sessionStorage.removeItem('checkoutInitiated');
+                            sessionStorage.removeItem('checkoutSessionId');
+                        }
+                    } else {
+                        console.error('MirthaNode: No session ID returned:', session);
+                        stripeErrorMessage.textContent = 'Failed to create Stripe session. Please try again.';
+                        stripeErrorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('MirthaNode: Error in Stripe checkout:', error.message);
+                    if (error.message.includes('Third-party cookies')) {
+                        stripeErrorMessage.textContent = 'Stripe payments require third-party cookies. Please enable them in your browser settings and try again.';
+                    } else {
+                        stripeErrorMessage.textContent = `Payment error: ${error.message}. Please try again.`;
+                    }
+                    stripeErrorMessage.style.display = 'block';
+                }
+            });
+        } else {
+            console.error('MirthaNode: Stripe button not found!');
+        }
+
+        window.addEventListener('load', () => {
+            const sessionId = sessionStorage.getItem('checkoutSessionId');
+            const checkoutInitiated = sessionStorage.getItem('checkoutInitiated');
+            if (sessionId && checkoutInitiated) {
+                fetch(`/test-session/${sessionId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.payment_status !== 'paid') {
+                            window.location.href = 'https://7222clock.com/cancel.html';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error verifying session status:', error);
+                        window.location.href = 'https://7222clock.com/cancel.html';
+                    });
+            }
+            sessionStorage.removeItem('checkoutInitiated');
+            sessionStorage.removeItem('checkoutSessionId');
+        });
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+          .then(() => console.log('Service Worker registered'))
+          .catch((err) => console.log('Service Worker registration failed:', err));
+      }
+    </script>
+</body>
+</html>

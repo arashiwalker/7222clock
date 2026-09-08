@@ -1,0 +1,14 @@
+{
+    "name": "7222clock",
+    "version": "1.0.0",
+    "description": "72/22 Clock with Stripe and Crypto Donations",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "express": "^4.17.1",
+        "stripe": "^14.5.0",
+        "cors": "^2.8.5"
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "72/22 Clock",
+  "short_name": "7222 Clock",
+  "description": "Mirtha-based clock system",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "images/favicon7222.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "images/favicon7222.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
