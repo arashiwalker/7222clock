@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = '7222-clock-v10';
+﻿const CACHE_NAME = '7222-clock-v11';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',

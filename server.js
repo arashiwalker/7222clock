@@ -11,7 +11,7 @@ const stripe = require('stripe')(stripeSecret);
 const app = express();
 
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://7222clock.com';
-const UNLOCK_PRICE_CENTS = 722;
+const UNLOCK_PRICE_CENTS = 100;
 const UNLOCK_COOKIE = 'mirtha_unlock';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 400;
 
