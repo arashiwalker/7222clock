@@ -12,7 +12,7 @@
 <body>
     <div class="container">
         <h1 id="successHeader">Checking payment?</h1>
-        <p id="successMessage">Verifying your $7.22 one-time unlock with Stripe.</p>
+        <p id="successMessage">Verifying your $1 one-time unlock with Stripe.</p>
         <p id="sessionId"></p>
         <p id="verifyStatus" class="payment-note"></p>
         <a href="/">Back to 72/22 Clock</a>
@@ -43,7 +43,7 @@
                 .then((data) => {
                     if (data.unlocked) {
                         header.textContent = 'Analog unlocked';
-                        message.textContent = 'Your one-time $7.22 payment was verified. The analog clock is unlocked on this browser.';
+                        message.textContent = 'Your one-time $1 payment was verified. The analog clock is unlocked on this browser.';
                         statusEl.textContent = 'Status: paid';
                     } else {
                         header.textContent = 'Not unlocked yet';
