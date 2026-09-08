@@ -1,4 +1,4 @@
-﻿/* Ensure box-sizing is applied globally */
+/* Ensure box-sizing is applied globally */
 *, *:before, *:after {
   box-sizing: border-box;
 }
@@ -529,7 +529,7 @@ footer p:hover .copyright-tooltip {
   display: none !important;
 }
 
-.payment-box.is-hidden {
+.is-hidden {
   display: none !important;
 }
 

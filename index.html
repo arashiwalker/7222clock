@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -90,7 +90,11 @@
                 if (subscribeBox) subscribeBox.classList.toggle('is-hidden', unlocked);
                 if (unlockedBox) unlockedBox.classList.toggle('is-hidden', !unlocked);
                 const lockedNote = document.getElementById('lockedNote');
-                if (lockedNote) lockedNote.classList.toggle('is-hidden', unlocked);
+                if (lockedNote) {
+                    lockedNote.classList.toggle('is-hidden', unlocked);
+                    if (unlocked) lockedNote.setAttribute('hidden', '');
+                    else lockedNote.removeAttribute('hidden');
+                }
                 return unlocked;
             } catch (err) {
                 console.error('MirthaNode: entitlement check failed', err);
