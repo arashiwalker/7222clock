@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = '7222-clock-v7';
+﻿const CACHE_NAME = '7222-clock-v8';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -24,9 +24,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  const isHTML = req.mode === 'navigate' || (req.headers.get('accept') || '').includes('text/html');
+  const accept = req.headers.get('accept') || '';
+  const isHTML = req.mode === 'navigate' || accept.includes('text/html');
+  const isCSS = req.destination === 'style' || (req.url && req.url.includes('styles.css'));
 
-  if (isHTML) {
+  if (isHTML || isCSS) {
     // Always prefer fresh HTML so deploys show up immediately
     event.respondWith(
       fetch(req).then((res) => {

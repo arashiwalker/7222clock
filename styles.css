@@ -518,7 +518,15 @@ footer p:hover .copyright-tooltip {
 
 /* Subscription gating - hide analog only; do not alter clock.js */
 .clock-container.is-locked {
-  display: none;
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.clock-container.is-locked canvas {
+  display: none !important;
 }
 
 .payment-box.is-hidden {
