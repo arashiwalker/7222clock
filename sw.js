@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = '7222-clock-v4';
+﻿const CACHE_NAME = '7222-clock-v5';
 const FILES_TO_CACHE = [
   '/',
   '/index.html',
@@ -42,4 +42,5 @@ self.addEventListener('fetch', (event) => {
     caches.match(req).then((response) => response || fetch(req))
   );
 });
+
 

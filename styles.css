@@ -380,6 +380,14 @@ button:hover {
   color: #000;
 }
 
+.payment-note {
+  margin: 0;
+  font-size: 12px;
+  color: #b0b0b0;
+  max-width: 260px;
+  line-height: 1.35;
+}
+
 .payment-amount {
   margin: 0;
   font-size: 28px;

@@ -47,7 +47,8 @@
                 <div class="payment-box">
                     <p class="donate-label">One-time payment</p>
                     <p class="payment-amount">$7.22</p>
-                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Pay $7.22</button>
+                    <p class="payment-note">You will confirm on the next step before your card is charged.</p>
+                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to payment</button>
                     <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
                 </div>
             </div>
@@ -73,6 +74,14 @@
         if (stripeButton) {
             stripeButton.addEventListener('click', async () => {
                 stripeErrorMessage.style.display = 'none';
+
+                const confirmed = window.confirm(
+                    'This is a real one-time charge of $7.22 USD.\n\nContinue to Stripe to enter your card details? You can still cancel on the Stripe page.'
+                );
+                if (!confirmed) {
+                    return;
+                }
+
                 stripeButton.disabled = true;
 
                 try {
