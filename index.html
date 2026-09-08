@@ -53,36 +53,9 @@
                 <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Donate with card</button>
                 <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
             </div>
-                <div class="donation-box">
-                    <p class="donate-label">Donate</p>
-                    <div class="crypto-container">
-                        <div class="crypto-card" onclick="copyAddress(this, 'bc1qhm73zj7hyjkz3jt0l6y6etaypu6ghcr7tkn57f')">
-                            <div class="crypto-header">
-                                <img src="images/btc-logo.png" alt="Bitcoin" class="crypto-icon">
-                                <strong class="crypto-name bitcoin">Bitcoin</strong>
-                            </div>
-                            <span class="crypto-address">bc1qhm73zj7hyjkz3jt0l6y6etaypu6ghcr7tkn57f</span>
-                            <img src="images/btc QR.jpeg" alt="Bitcoin QR Code" class="crypto-qr">
-                        </div>
-                        <div class="crypto-card" onclick="copyAddress(this, 'F2KVfuETeNo6grEJC3ULs1n7c8xWswCx5hKWTKxYGE8J')">
-                            <div class="crypto-header">
-                                <img src="images/sol-logo.png" alt="Solana" class="crypto-icon">
-                                <strong class="crypto-name solana">Solana</strong>
-                            </div>
-                            <span class="crypto-address">F2KVfuETeNo6grEJC3ULs1n7c8xWswCx5hKWTKxYGE8J</span>
-                            <img src="images/sol QR.jpeg" alt="Solana QR Code" class="crypto-qr">
-                        </div>
-                        <div class="crypto-card" onclick="copyAddress(this, '0x49509058764F40f9A4B7183b466B8d5c4ae2aa8F')">
-                            <div class="crypto-header">
-                                <img src="images/eth-logo.png" alt="Ethereum" class="crypto-icon">
-                                <strong class="crypto-name ethereum">Ethereum</strong>
-                            </div>
-                            <span class="crypto-address">0x49509058764F40f9A4B7183b466B8d5c4ae2aa8F</span>
-                            <img src="images/eth QR.jpeg" alt="Ethereum QR Code" class="crypto-qr">
-                        </div>
-                    </div>
-                </div>
             </div>
+        </div>
+    </div>
         </div>
     </div>
     <footer>
@@ -92,16 +65,6 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script src="clock.js"></script>
     <script>
-        function copyAddress(element, address) {
-            navigator.clipboard.writeText(address).then(() => {
-                const tooltip = document.createElement('span');
-                tooltip.textContent = 'Copied!';
-                tooltip.className = 'copy-tooltip';
-                element.appendChild(tooltip);
-                setTimeout(() => tooltip.remove(), 1000);
-            }).catch(err => console.error('MirthaNode: Copy failed:', err));
-        }
-
         let selectedAmount = 1000;
 
         document.querySelectorAll('.amount-btn').forEach((btn) => {
