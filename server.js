@@ -11,9 +11,9 @@ const stripe = require('stripe')(stripeSecret);
 const app = express();
 
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://7222clock.com';
-const SUB_PRICE_CENTS = 327;
-const SUB_COOKIE = 'mirtha_sub';
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~400 days
+const UNLOCK_PRICE_CENTS = 722;
+const UNLOCK_COOKIE = 'mirtha_unlock';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 400;
 
 const ALLOWED_ORIGINS = [
   'https://7222clock.com',
@@ -52,10 +52,10 @@ function parseCookies(req) {
   return out;
 }
 
-function setSubCookie(res, subscriptionId) {
+function setUnlockCookie(res, sessionId) {
   const secure = SITE_ORIGIN.startsWith('https');
   const parts = [
-    `${SUB_COOKIE}=${encodeURIComponent(subscriptionId)}`,
+    `${UNLOCK_COOKIE}=${encodeURIComponent(sessionId)}`,
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',
@@ -65,10 +65,10 @@ function setSubCookie(res, subscriptionId) {
   res.append('Set-Cookie', parts.join('; '));
 }
 
-function clearSubCookie(res) {
+function clearUnlockCookie(res) {
   const secure = SITE_ORIGIN.startsWith('https');
   const parts = [
-    `${SUB_COOKIE}=`,
+    `${UNLOCK_COOKIE}=`,
     'Path=/',
     'HttpOnly',
     'SameSite=Lax',
@@ -78,10 +78,10 @@ function clearSubCookie(res) {
   res.append('Set-Cookie', parts.join('; '));
 }
 
-async function subscriptionIsActive(subscriptionId) {
-  if (!subscriptionId) return false;
-  const sub = await stripe.subscriptions.retrieve(subscriptionId);
-  return sub.status === 'active' || sub.status === 'trialing';
+async function sessionIsPaid(sessionId) {
+  if (!sessionId) return false;
+  const session = await stripe.checkout.sessions.retrieve(sessionId);
+  return session.payment_status === 'paid' && session.mode === 'payment';
 }
 
 app.get('/stripe-config.js', (req, res) => {
@@ -110,20 +110,20 @@ app.get('/entitlement', async (req, res) => {
 
   try {
     const cookies = parseCookies(req);
-    const subscriptionId = cookies[SUB_COOKIE];
-    if (!subscriptionId) {
+    const sessionId = cookies[UNLOCK_COOKIE];
+    if (!sessionId) {
       res.status(200).json({ unlocked: false });
       return;
     }
 
-    const unlocked = await subscriptionIsActive(subscriptionId);
+    const unlocked = await sessionIsPaid(sessionId);
     if (!unlocked) {
-      clearSubCookie(res);
+      clearUnlockCookie(res);
     }
-    res.status(200).json({ unlocked, subscriptionId: unlocked ? subscriptionId : null });
+    res.status(200).json({ unlocked, sessionId: unlocked ? sessionId : null });
   } catch (error) {
     console.error('MirthaNode: entitlement error:', error.message);
-    clearSubCookie(res);
+    clearUnlockCookie(res);
     res.status(200).json({ unlocked: false });
   }
 });
@@ -136,17 +136,16 @@ app.post('/create-checkout-session', async (req, res) => {
 
   try {
     const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
+      mode: 'payment',
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency: 'usd',
           product_data: {
             name: '7222 Clock Analog Unlock',
-            description: 'Monthly access to the analog Mirtha clock'
+            description: 'One-time unlock of the analog Mirtha clock on this browser'
           },
-          unit_amount: SUB_PRICE_CENTS,
-          recurring: { interval: 'month' }
+          unit_amount: UNLOCK_PRICE_CENTS
         },
         quantity: 1
       }],
@@ -154,7 +153,7 @@ app.post('/create-checkout-session', async (req, res) => {
       cancel_url: `${SITE_ORIGIN}/cancel`
     });
 
-    console.log('MirthaNode: Subscription checkout created:', session.id);
+    console.log('MirthaNode: One-time checkout created:', session.id);
     res.status(200).json({ id: session.id, url: session.url });
   } catch (error) {
     console.error('MirthaNode: Stripe checkout error:', error.message);
@@ -175,32 +174,17 @@ app.post('/complete-checkout', async (req, res) => {
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['subscription']
-    });
-
-    let subscriptionId = null;
-    if (typeof session.subscription === 'string') {
-      subscriptionId = session.subscription;
-    } else if (session.subscription && session.subscription.id) {
-      subscriptionId = session.subscription.id;
-    }
-
-    if (!subscriptionId) {
-      res.status(400).json({ unlocked: false, error: 'No subscription on this session.' });
-      return;
-    }
-
-    const unlocked = await subscriptionIsActive(subscriptionId);
+    const unlocked = await sessionIsPaid(sessionId);
     if (unlocked) {
-      setSubCookie(res, subscriptionId);
+      setUnlockCookie(res, sessionId);
     }
 
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
     res.status(200).json({
       unlocked,
       payment_status: session.payment_status,
       status: session.status,
-      subscriptionId: unlocked ? subscriptionId : null
+      sessionId: unlocked ? sessionId : null
     });
   } catch (error) {
     console.error('MirthaNode: complete-checkout error:', error.message);
@@ -215,17 +199,12 @@ app.get('/test-session/:sessionId', async (req, res) => {
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId, {
-      expand: ['subscription']
-    });
+    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId);
     res.status(200).json({
       id: session.id,
       payment_status: session.payment_status,
       status: session.status,
-      mode: session.mode,
-      subscription: typeof session.subscription === 'string'
-        ? session.subscription
-        : (session.subscription && session.subscription.id) || null
+      mode: session.mode
     });
   } catch (error) {
     console.error('MirthaNode: Retrieve session error:', error.message);
