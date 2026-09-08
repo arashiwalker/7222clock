@@ -44,19 +44,13 @@
                         <button id="toggleSound">Sound: On</button>
                     </div>
                 </div>
-                            <div class="payment-box">
-                <p class="donate-label">Card</p>
-                <div class="amount-options" role="group" aria-label="Donation amount">
-                    <button type="button" class="amount-btn" data-amount="500">$5</button>
-                    <button type="button" class="amount-btn selected" data-amount="1000">$10</button>
-                    <button type="button" class="amount-btn" data-amount="2500">$25</button>
+                <div class="payment-box">
+                    <p class="donate-label">One-time payment</p>
+                    <p class="payment-amount">$7.22</p>
+                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Pay $7.22</button>
+                    <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
                 </div>
-                <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Donate with card</button>
-                <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
             </div>
-            </div>
-        </div>
-    </div>
         </div>
     </div>
     <footer>
@@ -66,14 +60,8 @@
     <script src="https://js.stripe.com/v3/"></script>
     <script src="clock.js"></script>
     <script>
-        let selectedAmount = 1000;
+        const DONATION_AMOUNT_CENTS = 722;
 
-        document.querySelectorAll('.amount-btn').forEach((btn) => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                selectedAmount = Number(btn.dataset.amount);
-            });
         });
 
         const stripeButton = document.getElementById('stripeCheckoutButton');
@@ -101,7 +89,7 @@
                             'Accept': 'application/json'
                         },
                         credentials: 'same-origin',
-                        body: JSON.stringify({ amount: selectedAmount })
+                        body: JSON.stringify({ amount: DONATION_AMOUNT_CENTS })
                     });
 
                     const payload = await response.json().catch(() => ({}));
