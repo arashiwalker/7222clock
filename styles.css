@@ -514,3 +514,20 @@ footer p:hover .copyright-tooltip {
     width: 9px;
   }
 }
+
+
+/* Subscription gating - hide analog only; do not alter clock.js */
+.clock-container.is-locked {
+  display: none;
+}
+
+.payment-box.is-hidden {
+  display: none !important;
+}
+
+.per-month {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9ad7ea;
+  margin-left: 2px;
+}
