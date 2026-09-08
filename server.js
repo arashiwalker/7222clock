@@ -60,7 +60,7 @@ app.post('/create-checkout-session', async (req, res) => {
   }
 
   const rawAmount = Number(req.body && req.body.amount);
-  const amount = Number.isFinite(rawAmount) ? Math.round(rawAmount) : 500;
+  const amount = Number.isFinite(rawAmount) ? Math.round(rawAmount) : 722;
   if (amount < 100 || amount > 100000) {
     res.status(400).json({ error: 'Amount must be between $1 and $1000.' });
     return;
@@ -72,7 +72,7 @@ app.post('/create-checkout-session', async (req, res) => {
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: '7222 Clock donation' },
+          product_data: { name: '7222 Clock ? one-time payment' },
           unit_amount: amount
         },
         quantity: 1
