@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subscription Verified - 72/22 Clock</title>
+    <title>Payment Verified - 72/22 Clock</title>
     <link rel="icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="shortcut icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="apple-touch-icon" href="/images/favicon7222.jpeg?v=2">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=8">
 </head>
 <body>
     <div class="container">
-        <h1 id="successHeader">Checking subscription?</h1>
-        <p id="successMessage">Verifying your $3.27/month unlock with Stripe.</p>
+        <h1 id="successHeader">Checking payment?</h1>
+        <p id="successMessage">Verifying your $7.22 one-time unlock with Stripe.</p>
         <p id="sessionId"></p>
         <p id="verifyStatus" class="payment-note"></p>
         <a href="/">Back to 72/22 Clock</a>
@@ -28,7 +28,7 @@
         const statusEl = document.getElementById('verifyStatus');
 
         if (!sessionId) {
-            header.textContent = 'No subscription to verify';
+            header.textContent = 'No payment to verify';
             message.textContent = 'Missing checkout session. Returning home.';
             setTimeout(() => { window.location.href = '/'; }, 2000);
         } else {
@@ -43,16 +43,16 @@
                 .then((data) => {
                     if (data.unlocked) {
                         header.textContent = 'Analog unlocked';
-                        message.textContent = 'Your $3.27/month subscription is active. The analog clock is unlocked on this browser.';
-                        statusEl.textContent = 'Status: subscribed';
+                        message.textContent = 'Your one-time $7.22 payment was verified. The analog clock is unlocked on this browser.';
+                        statusEl.textContent = 'Status: paid';
                     } else {
                         header.textContent = 'Not unlocked yet';
-                        message.textContent = data.error || 'Stripe did not confirm an active subscription.';
+                        message.textContent = data.error || 'Stripe did not confirm this payment as paid.';
                         statusEl.textContent = 'Status: ' + (data.payment_status || 'unknown');
                     }
                 })
                 .catch((error) => {
-                    console.error('Error verifying subscription:', error);
+                    console.error('Error verifying payment:', error);
                     header.textContent = 'Could not verify yet';
                     message.textContent = 'Refresh this page, or return home and try again.';
                 });

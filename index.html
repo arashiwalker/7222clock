@@ -31,7 +31,7 @@
                 <div class="clock-container is-locked" id="analogClock" hidden>
                     <canvas id="clockCanvas"></canvas>
                 </div>
-                <p class="payment-note" id="lockedNote">Digital preview ? subscribe to unlock the analog clock.</p>
+                <p class="payment-note" id="lockedNote">Digital preview - one-time $7.22 unlocks the analog clock on this browser.</p>
                 <div class="digital-clock">
                     <div class="flip-container">
                         <span class="huor" id="huor">00</span><span class="colon">:</span><span class="minit" id="minit">00</span><span class="colon">:</span><span class="mirtha" id="mirtha">00</span>
@@ -52,14 +52,14 @@
                 </div>
                 <div class="payment-box" id="subscribeBox">
                     <p class="donate-label">Unlock analog clock</p>
-                    <p class="payment-amount">$3.27<span class="per-month">/mo</span></p>
-                    <p class="payment-note">Test mode - no real money. Digital clock stays free; analog unlocks with a monthly subscription.</p>
-                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test subscribe</button>
+                    <p class="payment-amount">$7.22</p>
+                    <p class="payment-note">Test mode - no real money. One-time unlock on this browser. Digital stays free.</p>
+                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test payment</button>
                     <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
                 </div>
                 <div class="payment-box is-hidden" id="unlockedBox">
                     <p class="donate-label">Analog unlocked</p>
-                    <p class="payment-note">Thanks - your monthly subscription is active on this browser.</p>
+                    <p class="payment-note">Thanks - this browser has a one-time analog unlock.</p>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
                 const confirmed = window.confirm(
                     'TEST MODE: no real charge.
 
-Start a $3.27/month test subscription to unlock the analog clock? Use card 4242 4242 4242 4242.'
+TEST MODE: no real charge.\n\nPay $7.22 once (test) to unlock the analog clock on this browser? Use card 4242 4242 4242 4242.'
                 );
                 if (!confirmed) {
                     return;
