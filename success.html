@@ -7,7 +7,7 @@
     <link rel="icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="shortcut icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="apple-touch-icon" href="/images/favicon7222.jpeg?v=2">
-    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="stylesheet" href="styles.css?v=9">
 </head>
 <body>
     <div class="container">
@@ -43,7 +43,10 @@
                 .then((data) => {
                     if (data.unlocked) {
                         header.textContent = 'Analog unlocked';
-                        message.textContent = 'Your one-time $1 payment was verified. The analog clock is unlocked on this browser.';
+                        const emailNote = data.email
+                            ? (' Unlock is tied to ' + data.email + '. You can sign in on other devices with that email.')
+                            : ' Unlock is tied to the email you used at Stripe Checkout — sign in on other devices with that email.';
+                        message.textContent = 'Your one-time $1 payment was verified.' + emailNote;
                         statusEl.textContent = 'Status: paid';
                     } else {
                         header.textContent = 'Not unlocked yet';

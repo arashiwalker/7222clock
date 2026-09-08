@@ -15,7 +15,7 @@
     <meta property="og:url" content="https://7222clock.com">
     <meta property="og:type" content="website">
     <meta name="twitter:image" content="/images/favicon7222.jpeg?v=2">
-    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="stylesheet" href="styles.css?v=9">
     <style id="critical-lock">
       /* Free tier: analog stays hidden until /entitlement says unlocked */
       .clock-container.is-locked { display: none !important; }
@@ -31,7 +31,7 @@
                 <div class="clock-container is-locked" id="analogClock" hidden>
                     <canvas id="clockCanvas"></canvas>
                 </div>
-                <p class="payment-note" id="lockedNote">Digital preview - one-time $1 unlocks the analog clock on this browser.</p>
+                <p class="payment-note" id="lockedNote">Digital preview - one-time $1 unlocks the analog clock on any device with your email.</p>
                 <div class="digital-clock">
                     <div class="flip-container">
                         <span class="huor" id="huor">00</span><span class="colon">:</span><span class="minit" id="minit">00</span><span class="colon">:</span><span class="mirtha" id="mirtha">00</span>
@@ -53,13 +53,22 @@
                 <div class="payment-box" id="subscribeBox">
                     <p class="donate-label">Unlock analog clock</p>
                     <p class="payment-amount">$1</p>
-                    <p class="payment-note">Test mode - no real money. One-time unlock on this browser. Digital stays free.</p>
+                    <p class="payment-note">Test mode - no real money. One-time unlock follows your email across devices. Digital stays free.</p>
                     <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test payment</button>
                     <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
+                    <div class="signin-section">
+                        <p class="signin-label">Already paid? Sign in</p>
+                        <label class="signin-email-label" for="signinEmail">Email used at Stripe Checkout</label>
+                        <input type="email" id="signinEmail" class="signin-email" placeholder="you@example.com" autocomplete="email">
+                        <button type="button" id="signinButton" class="signin-btn">Sign in</button>
+                        <p id="signinErrorMessage" class="stripe-error" style="display:none;"></p>
+                    </div>
                 </div>
                 <div class="payment-box is-hidden" id="unlockedBox">
                     <p class="donate-label">Analog unlocked</p>
-                    <p class="payment-note">Thanks - this browser has a one-time analog unlock.</p>
+                    <p class="payment-note">Thanks - your analog unlock follows this email across devices.</p>
+                    <p class="signed-in-email" id="signedInEmail"></p>
+                    <button type="button" id="signoutButton" class="signin-btn">Sign out</button>
                 </div>
             </div>
         </div>
@@ -75,6 +84,7 @@
             const analog = document.getElementById('analogClock');
             const subscribeBox = document.getElementById('subscribeBox');
             const unlockedBox = document.getElementById('unlockedBox');
+            const signedInEmail = document.getElementById('signedInEmail');
             try {
                 const res = await fetch('/entitlement', { credentials: 'same-origin' });
                 const data = await res.json();
@@ -95,6 +105,15 @@
                     if (unlocked) lockedNote.setAttribute('hidden', '');
                     else lockedNote.removeAttribute('hidden');
                 }
+                if (signedInEmail) {
+                    if (data.email) {
+                        signedInEmail.textContent = 'Signed in as ' + data.email;
+                        signedInEmail.classList.remove('is-hidden');
+                    } else {
+                        signedInEmail.textContent = '';
+                        signedInEmail.classList.add('is-hidden');
+                    }
+                }
                 return unlocked;
             } catch (err) {
                 console.error('MirthaNode: entitlement check failed', err);
@@ -106,10 +125,20 @@
 
         const stripeButton = document.getElementById('stripeCheckoutButton');
         const stripeErrorMessage = document.getElementById('stripeErrorMessage');
+        const signinButton = document.getElementById('signinButton');
+        const signinEmail = document.getElementById('signinEmail');
+        const signinErrorMessage = document.getElementById('signinErrorMessage');
+        const signoutButton = document.getElementById('signoutButton');
 
         function showStripeError(message) {
             stripeErrorMessage.textContent = message;
             stripeErrorMessage.style.display = 'block';
+        }
+
+        function showSigninError(message) {
+            if (!signinErrorMessage) return;
+            signinErrorMessage.textContent = message;
+            signinErrorMessage.style.display = message ? 'block' : 'none';
         }
 
         if (stripeButton) {
@@ -117,7 +146,7 @@
                 stripeErrorMessage.style.display = 'none';
 
                 const confirmed = window.confirm(
-                    'TEST MODE: no real charge. Pay $1 once (test) to unlock the analog clock on this browser? Use card 4242 4242 4242 4242.'
+                    'TEST MODE: no real charge. Pay $1 once (test) to unlock the analog clock on any device with the email you enter at Stripe Checkout? Use card 4242 4242 4242 4242.'
                 );
                 if (!confirmed) {
                     return;
@@ -154,6 +183,60 @@
                     showStripeError(error.message || 'Payment error. Please try again.');
                     stripeButton.disabled = false;
                 }
+            });
+        }
+
+        if (signinButton && signinEmail) {
+            signinButton.addEventListener('click', async () => {
+                showSigninError('');
+                const email = (signinEmail.value || '').trim();
+                if (!email) {
+                    showSigninError('Enter the email you used at Stripe Checkout.');
+                    return;
+                }
+                signinButton.disabled = true;
+                try {
+                    const response = await fetch('/auth/signin', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        credentials: 'same-origin',
+                        body: JSON.stringify({ email })
+                    });
+                    const payload = await response.json().catch(() => ({}));
+                    if (!response.ok || !payload.unlocked) {
+                        throw new Error(payload.error || 'No unlock found for that email');
+                    }
+                    await refreshEntitlement();
+                } catch (error) {
+                    console.error('MirthaNode: sign-in error:', error);
+                    showSigninError(error.message || 'Sign-in failed.');
+                } finally {
+                    signinButton.disabled = false;
+                }
+            });
+            signinEmail.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    signinButton.click();
+                }
+            });
+        }
+
+        if (signoutButton) {
+            signoutButton.addEventListener('click', async () => {
+                try {
+                    await fetch('/auth/signout', {
+                        method: 'POST',
+                        headers: { 'Accept': 'application/json' },
+                        credentials: 'same-origin'
+                    });
+                } catch (err) {
+                    console.error('MirthaNode: sign-out error:', err);
+                }
+                await refreshEntitlement();
             });
         }
     </script>
