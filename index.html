@@ -23,7 +23,7 @@
     <div class="container">
         <div class="main-content">
             <div class="clock-section">
-                <div class="clock-container">
+                <div class="clock-container is-locked" id="analogClock">
                     <canvas id="clockCanvas"></canvas>
                 </div>
                 <div class="digital-clock">
@@ -44,12 +44,16 @@
                         <button id="toggleSound">Sound: On</button>
                     </div>
                 </div>
-                <div class="payment-box">
-                    <p class="donate-label">One-time payment</p>
-                    <p class="payment-amount">$7.22</p>
-                    <p class="payment-note">Test mode - no real money is charged. Use Stripe test cards only.</p>
-                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test payment</button>
+                <div class="payment-box" id="subscribeBox">
+                    <p class="donate-label">Unlock analog clock</p>
+                    <p class="payment-amount">$3.27<span class="per-month">/mo</span></p>
+                    <p class="payment-note">Test mode - no real money. Digital clock stays free; analog unlocks with a monthly subscription.</p>
+                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test subscribe</button>
                     <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
+                </div>
+                <div class="payment-box is-hidden" id="unlockedBox">
+                    <p class="donate-label">Analog unlocked</p>
+                    <p class="payment-note">Thanks - your monthly subscription is active on this browser.</p>
                 </div>
             </div>
         </div>
@@ -57,11 +61,31 @@
     <footer>
         <p>&copy; 2025 7222clock.com <span class="copyright-tooltip">All Rights Reserved. Unauthorized use prohibited.</span></p>
     </footer>
-    <script src="/stripe-config.js"></script>
+        <script src="/stripe-config.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
     <script src="clock.js"></script>
     <script>
-        const DONATION_AMOUNT_CENTS = 722;
+        async function refreshEntitlement() {
+            const analog = document.getElementById('analogClock');
+            const subscribeBox = document.getElementById('subscribeBox');
+            const unlockedBox = document.getElementById('unlockedBox');
+            try {
+                const res = await fetch('/entitlement', { credentials: 'same-origin' });
+                const data = await res.json();
+                const unlocked = !!data.unlocked;
+                if (analog) {
+                    analog.classList.toggle('is-locked', !unlocked);
+                }
+                if (subscribeBox) subscribeBox.classList.toggle('is-hidden', unlocked);
+                if (unlockedBox) unlockedBox.classList.toggle('is-hidden', !unlocked);
+                return unlocked;
+            } catch (err) {
+                console.error('MirthaNode: entitlement check failed', err);
+                return false;
+            }
+        }
+
+        refreshEntitlement();
 
         const stripeButton = document.getElementById('stripeCheckoutButton');
         const stripeErrorMessage = document.getElementById('stripeErrorMessage');
@@ -76,7 +100,9 @@
                 stripeErrorMessage.style.display = 'none';
 
                 const confirmed = window.confirm(
-                    'TEST MODE: no real charge.\n\nContinue to Stripe test checkout for $7.22? Use a Stripe test card (e.g. 4242 4242 4242 4242).'
+                    'TEST MODE: no real charge.
+
+Start a $3.27/month test subscription to unlock the analog clock? Use card 4242 4242 4242 4242.'
                 );
                 if (!confirmed) {
                     return;
@@ -96,7 +122,7 @@
                             'Accept': 'application/json'
                         },
                         credentials: 'same-origin',
-                        body: JSON.stringify({ amount: DONATION_AMOUNT_CENTS })
+                        body: JSON.stringify({})
                     });
 
                     const payload = await response.json().catch(() => ({}));
@@ -125,5 +151,3 @@
     </script>
 </body>
 </html>
-
-

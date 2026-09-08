@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
@@ -11,6 +11,10 @@ const stripe = require('stripe')(stripeSecret);
 const app = express();
 
 const SITE_ORIGIN = process.env.SITE_ORIGIN || 'https://7222clock.com';
+const SUB_PRICE_CENTS = 327;
+const SUB_COOKIE = 'mirtha_sub';
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 400; // ~400 days
+
 const ALLOWED_ORIGINS = [
   'https://7222clock.com',
   'https://www.7222clock.com',
@@ -35,6 +39,51 @@ app.use((req, res, next) => {
   next();
 });
 
+function parseCookies(req) {
+  const header = req.headers.cookie || '';
+  const out = {};
+  header.split(';').forEach((part) => {
+    const idx = part.indexOf('=');
+    if (idx === -1) return;
+    const key = part.slice(0, idx).trim();
+    const val = part.slice(idx + 1).trim();
+    out[key] = decodeURIComponent(val);
+  });
+  return out;
+}
+
+function setSubCookie(res, subscriptionId) {
+  const secure = SITE_ORIGIN.startsWith('https');
+  const parts = [
+    `${SUB_COOKIE}=${encodeURIComponent(subscriptionId)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${COOKIE_MAX_AGE}`
+  ];
+  if (secure) parts.push('Secure');
+  res.append('Set-Cookie', parts.join('; '));
+}
+
+function clearSubCookie(res) {
+  const secure = SITE_ORIGIN.startsWith('https');
+  const parts = [
+    `${SUB_COOKIE}=`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0'
+  ];
+  if (secure) parts.push('Secure');
+  res.append('Set-Cookie', parts.join('; '));
+}
+
+async function subscriptionIsActive(subscriptionId) {
+  if (!subscriptionId) return false;
+  const sub = await stripe.subscriptions.retrieve(subscriptionId);
+  return sub.status === 'active' || sub.status === 'trialing';
+}
+
 app.get('/stripe-config.js', (req, res) => {
   res.type('application/javascript');
   res.send(`window.STRIPE_PUBLISHABLE_KEY = ${JSON.stringify(stripePublishable)};`);
@@ -53,40 +102,109 @@ app.get('/cancel', (req, res) => {
   res.sendFile(path.join(__dirname, 'cancel.html'));
 });
 
+app.get('/entitlement', async (req, res) => {
+  if (!stripeSecret) {
+    res.status(500).json({ unlocked: false, error: 'Stripe is not configured on the server.' });
+    return;
+  }
+
+  try {
+    const cookies = parseCookies(req);
+    const subscriptionId = cookies[SUB_COOKIE];
+    if (!subscriptionId) {
+      res.status(200).json({ unlocked: false });
+      return;
+    }
+
+    const unlocked = await subscriptionIsActive(subscriptionId);
+    if (!unlocked) {
+      clearSubCookie(res);
+    }
+    res.status(200).json({ unlocked, subscriptionId: unlocked ? subscriptionId : null });
+  } catch (error) {
+    console.error('MirthaNode: entitlement error:', error.message);
+    clearSubCookie(res);
+    res.status(200).json({ unlocked: false });
+  }
+});
+
 app.post('/create-checkout-session', async (req, res) => {
   if (!stripeSecret) {
     res.status(500).json({ error: 'Stripe is not configured on the server.' });
     return;
   }
 
-  const rawAmount = Number(req.body && req.body.amount);
-  const amount = Number.isFinite(rawAmount) ? Math.round(rawAmount) : 722;
-  if (amount < 100 || amount > 100000) {
-    res.status(400).json({ error: 'Amount must be between $1 and $1000.' });
-    return;
-  }
-
   try {
     const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: '7222 Clock ? one-time payment' },
-          unit_amount: amount
+          product_data: {
+            name: '7222 Clock Analog Unlock',
+            description: 'Monthly access to the analog Mirtha clock'
+          },
+          unit_amount: SUB_PRICE_CENTS,
+          recurring: { interval: 'month' }
         },
         quantity: 1
       }],
-      mode: 'payment',
       success_url: `${SITE_ORIGIN}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SITE_ORIGIN}/cancel`
     });
 
-    console.log('MirthaNode: Checkout session created:', session.id);
+    console.log('MirthaNode: Subscription checkout created:', session.id);
     res.status(200).json({ id: session.id, url: session.url });
   } catch (error) {
     console.error('MirthaNode: Stripe checkout error:', error.message);
     res.status(500).json({ error: error.message || 'Unable to create checkout session.' });
+  }
+});
+
+app.post('/complete-checkout', async (req, res) => {
+  if (!stripeSecret) {
+    res.status(500).json({ unlocked: false, error: 'Stripe is not configured on the server.' });
+    return;
+  }
+
+  const sessionId = req.body && req.body.session_id;
+  if (!sessionId) {
+    res.status(400).json({ unlocked: false, error: 'Missing session_id' });
+    return;
+  }
+
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId, {
+      expand: ['subscription']
+    });
+
+    let subscriptionId = null;
+    if (typeof session.subscription === 'string') {
+      subscriptionId = session.subscription;
+    } else if (session.subscription && session.subscription.id) {
+      subscriptionId = session.subscription.id;
+    }
+
+    if (!subscriptionId) {
+      res.status(400).json({ unlocked: false, error: 'No subscription on this session.' });
+      return;
+    }
+
+    const unlocked = await subscriptionIsActive(subscriptionId);
+    if (unlocked) {
+      setSubCookie(res, subscriptionId);
+    }
+
+    res.status(200).json({
+      unlocked,
+      payment_status: session.payment_status,
+      status: session.status,
+      subscriptionId: unlocked ? subscriptionId : null
+    });
+  } catch (error) {
+    console.error('MirthaNode: complete-checkout error:', error.message);
+    res.status(500).json({ unlocked: false, error: error.message || 'Unable to complete checkout.' });
   }
 });
 
@@ -97,11 +215,17 @@ app.get('/test-session/:sessionId', async (req, res) => {
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId);
+    const session = await stripe.checkout.sessions.retrieve(req.params.sessionId, {
+      expand: ['subscription']
+    });
     res.status(200).json({
       id: session.id,
       payment_status: session.payment_status,
-      status: session.status
+      status: session.status,
+      mode: session.mode,
+      subscription: typeof session.subscription === 'string'
+        ? session.subscription
+        : (session.subscription && session.subscription.id) || null
     });
   } catch (error) {
     console.error('MirthaNode: Retrieve session error:', error.message);

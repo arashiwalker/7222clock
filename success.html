@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Verified - 72/22 Clock</title>
+    <title>Subscription Verified - 72/22 Clock</title>
     <link rel="icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="shortcut icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="apple-touch-icon" href="/images/favicon7222.jpeg?v=2">
@@ -11,8 +11,8 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="successHeader">Checking payment?</h1>
-        <p id="successMessage">Verifying your $7.22 test payment with Stripe.</p>
+        <h1 id="successHeader">Checking subscription?</h1>
+        <p id="successMessage">Verifying your $3.27/month unlock with Stripe.</p>
         <p id="sessionId"></p>
         <p id="verifyStatus" class="payment-note"></p>
         <a href="/">Back to 72/22 Clock</a>
@@ -28,28 +28,33 @@
         const statusEl = document.getElementById('verifyStatus');
 
         if (!sessionId) {
-            header.textContent = 'No payment to verify';
+            header.textContent = 'No subscription to verify';
             message.textContent = 'Missing checkout session. Returning home.';
             setTimeout(() => { window.location.href = '/'; }, 2000);
         } else {
             document.getElementById('sessionId').textContent = 'Reference: ' + sessionId;
-            fetch('/test-session/' + encodeURIComponent(sessionId))
+            fetch('/complete-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({ session_id: sessionId })
+            })
                 .then((response) => response.json())
                 .then((data) => {
-                    if (data.payment_status === 'paid') {
-                        header.textContent = 'Payment verified';
-                        message.textContent = 'Your one-time $7.22 test payment was confirmed by Stripe (no real charge).';
-                        statusEl.textContent = 'Status: paid';
+                    if (data.unlocked) {
+                        header.textContent = 'Analog unlocked';
+                        message.textContent = 'Your $3.27/month subscription is active. The analog clock is unlocked on this browser.';
+                        statusEl.textContent = 'Status: subscribed';
                     } else {
-                        header.textContent = 'Payment not completed';
-                        message.textContent = 'Stripe did not confirm this payment as paid.';
+                        header.textContent = 'Not unlocked yet';
+                        message.textContent = data.error || 'Stripe did not confirm an active subscription.';
                         statusEl.textContent = 'Status: ' + (data.payment_status || 'unknown');
                     }
                 })
                 .catch((error) => {
-                    console.error('Error verifying payment status:', error);
+                    console.error('Error verifying subscription:', error);
                     header.textContent = 'Could not verify yet';
-                    message.textContent = 'We could not reach Stripe verification. Check your email/Stripe receipt, or refresh this page.';
+                    message.textContent = 'Refresh this page, or return home and try again.';
                 });
         }
     </script>
