@@ -47,8 +47,8 @@
                 <div class="payment-box">
                     <p class="donate-label">One-time payment</p>
                     <p class="payment-amount">$7.22</p>
-                    <p class="payment-note">You will confirm on the next step before your card is charged.</p>
-                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to payment</button>
+                    <p class="payment-note">Test mode - no real money is charged. Use Stripe test cards only.</p>
+                    <button type="button" id="stripeCheckoutButton" class="stripe-checkout-btn">Continue to test payment</button>
                     <p id="stripeErrorMessage" class="stripe-error" style="display:none;"></p>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                 stripeErrorMessage.style.display = 'none';
 
                 const confirmed = window.confirm(
-                    'This is a real one-time charge of $7.22 USD.\n\nContinue to Stripe to enter your card details? You can still cancel on the Stripe page.'
+                    'TEST MODE: no real charge.\n\nContinue to Stripe test checkout for $7.22? Use a Stripe test card (e.g. 4242 4242 4242 4242).'
                 );
                 if (!confirmed) {
                     return;
@@ -125,4 +125,5 @@
     </script>
 </body>
 </html>
+
 
