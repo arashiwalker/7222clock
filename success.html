@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donation Successful - 72/22 Clock</title>
+    <title>Payment Verified - 72/22 Clock</title>
     <link rel="icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="shortcut icon" href="/images/favicon7222.jpeg?v=2" type="image/jpeg">
     <link rel="apple-touch-icon" href="/images/favicon7222.jpeg?v=2">
@@ -11,9 +11,10 @@
 </head>
 <body>
     <div class="container">
-        <h1 id="successHeader">Thank You!</h1>
-        <p id="successMessage">Your donation was successful.</p>
+        <h1 id="successHeader">Checking payment?</h1>
+        <p id="successMessage">Verifying your $7.22 payment with Stripe.</p>
         <p id="sessionId"></p>
+        <p id="verifyStatus" class="payment-note"></p>
         <a href="/">Back to 72/22 Clock</a>
     </div>
     <footer>
@@ -22,20 +23,33 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const sessionId = urlParams.get('session_id');
+        const header = document.getElementById('successHeader');
+        const message = document.getElementById('successMessage');
+        const statusEl = document.getElementById('verifyStatus');
 
         if (!sessionId) {
-            window.location.href = '/';
+            header.textContent = 'No payment to verify';
+            message.textContent = 'Missing checkout session. Returning home.';
+            setTimeout(() => { window.location.href = '/'; }, 2000);
         } else {
-            document.getElementById('sessionId').textContent = `Transaction ID: ${sessionId}`;
-            fetch(`/test-session/${encodeURIComponent(sessionId)}`)
+            document.getElementById('sessionId').textContent = 'Reference: ' + sessionId;
+            fetch('/test-session/' + encodeURIComponent(sessionId))
                 .then((response) => response.json())
                 .then((data) => {
-                    if (data.payment_status !== 'paid') {
-                        window.location.href = '/';
+                    if (data.payment_status === 'paid') {
+                        header.textContent = 'Payment verified';
+                        message.textContent = 'Your one-time $7.22 payment was confirmed by Stripe.';
+                        statusEl.textContent = 'Status: paid';
+                    } else {
+                        header.textContent = 'Payment not completed';
+                        message.textContent = 'Stripe did not confirm this payment as paid.';
+                        statusEl.textContent = 'Status: ' + (data.payment_status || 'unknown');
                     }
                 })
                 .catch((error) => {
                     console.error('Error verifying payment status:', error);
+                    header.textContent = 'Could not verify yet';
+                    message.textContent = 'We could not reach Stripe verification. Check your email/Stripe receipt, or refresh this page.';
                 });
         }
     </script>
