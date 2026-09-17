@@ -52,13 +52,13 @@ body, html {
 }
 
 canvas {
-  border: 5px solid #00A1D6;
+  border: 5px solid #00FF00;
   border-radius: 50%;
   width: 100%;
   max-width: 500px;
   height: auto;
   aspect-ratio: 1 / 1;
-  box-shadow: 0 0 20px rgba(0, 161, 214, 0.5);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
 }
 
 /* Digital clock styling */
@@ -105,7 +105,7 @@ canvas {
 }
 
 .mirtha {
-  color: #00FF00;
+  color: #00A1D6;
 }
 
 .minit {
@@ -127,7 +127,7 @@ canvas {
 }
 
 .glow-mirtha {
-  text-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00;
+  text-shadow: 0 0 10px #00A1D6, 0 0 20px #00A1D6;
 }
 
 .glow-minit {
@@ -188,7 +188,7 @@ canvas {
 }
 
 .interval-description strong.mirtha {
-  color: #00FF00;
+  color: #00A1D6;
 }
 
 .interval-description strong.minit {

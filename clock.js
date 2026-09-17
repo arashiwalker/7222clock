@@ -203,7 +203,7 @@ function drawClockFace() {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, clockRadius + 5, 0, 2 * Math.PI);
-    ctx.strokeStyle = `rgba(0, 255, 0, ${mirthaGlowOpacity})`;
+    ctx.strokeStyle = `rgba(0, 161, 214, ${mirthaGlowOpacity})`;
     ctx.lineWidth = 3;
     ctx.stroke();
 
@@ -221,7 +221,7 @@ function drawClockFace() {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, clockRadius, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#00FF00';
+    ctx.strokeStyle = '#00A1D6';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -249,7 +249,7 @@ function drawTicks() {
         ctx.beginPath();
         ctx.moveTo(tickXStart, tickYStart);
         ctx.lineTo(tickXEnd, tickYEnd);
-        ctx.strokeStyle = '#00FF00';
+        ctx.strokeStyle = '#00A1D6';
         ctx.lineWidth = 2;
         ctx.stroke();
     }
@@ -355,7 +355,7 @@ function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, mini
     }
 
     // Apply glow dynamically
-    mirthaEl.style.textShadow = mirthaDigitalGlowOpacity > 0 ? `0 0 10px #00FF00, 0 0 ${20 * mirthaDigitalGlowOpacity}px #00FF00` : 'none';
+    mirthaEl.style.textShadow = mirthaDigitalGlowOpacity > 0 ? `0 0 10px #00A1D6, 0 0 ${20 * mirthaDigitalGlowOpacity}px #00A1D6` : 'none';
     minitEl.style.textShadow = minitDigitalGlowOpacity > 0 ? `0 0 10px #800080, 0 0 ${20 * minitDigitalGlowOpacity}px #800080` : 'none';
     huorEl.style.textShadow = huorDigitalGlowOpacity > 0 ? `0 0 10px #FF0000, 0 0 ${20 * huorDigitalGlowOpacity}px #FF0000` : 'none';
 
@@ -445,7 +445,7 @@ function drawClockHands() {
 
     const huor = drawHand(huorRotation, clockRadius / 3, '#FF0000', 3);
     const minit = drawHand(minitRotation, (clockRadius * 2) / 3, '#800080', 3);
-    const mirtha = drawHand(mirthaRotation, clockRadius, '#00FF00', 3);
+    const mirtha = drawHand(mirthaRotation, clockRadius, '#00A1D6', 3);
 
     const huorLabel = getLabel(huorTick, totalHuors);
     const huorTextX = huor.xEnd + 15 * Math.cos((huorRotation - 90) * (Math.PI / 180));
@@ -460,7 +460,7 @@ function drawClockHands() {
     const mirthaLabel = getLabel(mirthaTick, totalMirthas);
     const mirthaTextX = mirtha.xEnd + 15 * Math.cos((mirthaRotation - 90) * (Math.PI / 180));
     const mirthaTextY = mirtha.yEnd + 15 * Math.sin((mirthaRotation - 90) * (Math.PI / 180));
-    drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00FF00');
+    drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
 
     updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime);
 }
