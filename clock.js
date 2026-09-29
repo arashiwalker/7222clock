@@ -297,7 +297,7 @@ function drawHand(rotation, length, color, lineWidth) {
 }
 
 function drawLabel(label, x, y, color) {
-    const fontSize = Math.max(12, canvas.width / 25);
+    const fontSize = Math.max(14, canvas.width / 20);
     ctx.fillStyle = color;
     ctx.font = `${fontSize}px Arial`;
     ctx.textAlign = 'center';
