@@ -297,7 +297,7 @@ function drawHand(rotation, length, color, lineWidth) {
 }
 
 function drawLabel(label, x, y, color) {
-    const fontSize = Math.max(16, canvas.width / 18);
+    const fontSize = Math.max(17, canvas.width / 16);
     ctx.fillStyle = color;
     ctx.font = `${fontSize}px Arial`;
     ctx.textAlign = 'center';
@@ -306,8 +306,8 @@ function drawLabel(label, x, y, color) {
 }
 
 function tipLabelOffset() {
-    const fontSize = Math.max(16, canvas.width / 18);
-    return Math.max(22, Math.round(fontSize / 2 + 10));
+    const fontSize = Math.max(17, canvas.width / 16);
+    return Math.max(16, Math.round(fontSize / 2 + 5));
 }
 
 function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime) {
