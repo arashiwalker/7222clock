@@ -1,4 +1,4 @@
-const canvas = document.getElementById('clockCanvas');
+﻿const canvas = document.getElementById('clockCanvas');
 const ctx = canvas.getContext('2d');
 const toggleSoundBtn = document.getElementById('toggleSound');
 if (!ctx) {
@@ -136,7 +136,7 @@ function playHarmonySounds() {
 
 toggleSoundBtn.addEventListener('click', () => {
     isSoundOn = !isSoundOn;
-    toggleSoundBtn.textContent = isSoundOn ? '🔊 Sound: On' : '🔇 Sound: Off';
+    toggleSoundBtn.textContent = isSoundOn ? 'ðŸ”Š Sound: On' : 'ðŸ”‡ Sound: Off';
     console.log('MirthaNode: Sound toggled:', isSoundOn);
     if (isSoundOn && audioCtx.state === 'suspended') {
         audioCtx.resume().then(() => {
@@ -297,12 +297,17 @@ function drawHand(rotation, length, color, lineWidth) {
 }
 
 function drawLabel(label, x, y, color) {
-    const fontSize = Math.max(14, canvas.width / 20);
+    const fontSize = Math.max(16, canvas.width / 18);
     ctx.fillStyle = color;
     ctx.font = `${fontSize}px Arial`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(label, x, y);
+}
+
+function tipLabelOffset() {
+    const fontSize = Math.max(16, canvas.width / 18);
+    return Math.max(22, Math.round(fontSize / 2 + 10));
 }
 
 function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime) {
@@ -448,18 +453,19 @@ function drawClockHands() {
     const mirtha = drawHand(mirthaRotation, clockRadius, '#00A1D6', 3);
 
     const huorLabel = getLabel(huorTick, totalHuors);
-    const huorTextX = huor.xEnd + 15 * Math.cos((huorRotation - 90) * (Math.PI / 180));
-    const huorTextY = huor.yEnd + 15 * Math.sin((huorRotation - 90) * (Math.PI / 180));
+    const tipOut = tipLabelOffset();
+    const huorTextX = huor.xEnd + tipOut * Math.cos((huorRotation - 90) * (Math.PI / 180));
+    const huorTextY = huor.yEnd + tipOut * Math.sin((huorRotation - 90) * (Math.PI / 180));
     drawLabel(huorLabel, huorTextX, huorTextY, '#FF0000');
 
     const minitLabel = getLabel(minitTick, totalMinits);
-    const minitTextX = minit.xEnd + 15 * Math.cos((minitRotation - 90) * (Math.PI / 180));
-    const minitTextY = minit.yEnd + 15 * Math.sin((minitRotation - 90) * (Math.PI / 180));
+    const minitTextX = minit.xEnd + tipOut * Math.cos((minitRotation - 90) * (Math.PI / 180));
+    const minitTextY = minit.yEnd + tipOut * Math.sin((minitRotation - 90) * (Math.PI / 180));
     drawLabel(minitLabel, minitTextX, minitTextY, '#800080');
 
     const mirthaLabel = getLabel(mirthaTick, totalMirthas);
-    const mirthaTextX = mirtha.xEnd + 15 * Math.cos((mirthaRotation - 90) * (Math.PI / 180));
-    const mirthaTextY = mirtha.yEnd + 15 * Math.sin((mirthaRotation - 90) * (Math.PI / 180));
+    const mirthaTextX = mirtha.xEnd + tipOut * Math.cos((mirthaRotation - 90) * (Math.PI / 180));
+    const mirthaTextY = mirtha.yEnd + tipOut * Math.sin((mirthaRotation - 90) * (Math.PI / 180));
     drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
 
     updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime);
