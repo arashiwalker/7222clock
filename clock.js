@@ -207,11 +207,16 @@ function drawClockFace() {
     ctx.lineWidth = 3;
     ctx.stroke();
 
+    // Purple tick glow — soft bloom like canvas green (blur 20 / alpha 0.5)
+    ctx.save();
     ctx.beginPath();
     ctx.arc(centerX, centerY, (clockRadius * 2) / 3 + 5, 0, 2 * Math.PI);
     ctx.strokeStyle = `rgba(153, 51, 153, ${minitGlowOpacity})`;
     ctx.lineWidth = 3;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = `rgba(153, 51, 153, ${0.5 * minitGlowOpacity})`;
     ctx.stroke();
+    ctx.restore();
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, clockRadius / 3 + 5, 0, 2 * Math.PI);
@@ -225,11 +230,16 @@ function drawClockFace() {
     ctx.lineWidth = 2;
     ctx.stroke();
 
+    // Solid purple ring with soft ambient glow (same pattern as canvas green glow)
+    ctx.save();
     ctx.beginPath();
     ctx.arc(centerX, centerY, (clockRadius * 2) / 3, 0, 2 * Math.PI);
     ctx.strokeStyle = '#993399';
     ctx.lineWidth = 2;
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = 'rgba(153, 51, 153, 0.5)';
     ctx.stroke();
+    ctx.restore();
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, clockRadius / 3, 0, 2 * Math.PI);
@@ -361,7 +371,7 @@ function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, mini
 
     // Apply glow dynamically
     mirthaEl.style.textShadow = mirthaDigitalGlowOpacity > 0 ? `0 0 10px #00A1D6, 0 0 ${20 * mirthaDigitalGlowOpacity}px #00A1D6` : 'none';
-    minitEl.style.textShadow = minitDigitalGlowOpacity > 0 ? `0 0 10px #993399, 0 0 ${20 * minitDigitalGlowOpacity}px #993399` : 'none';
+    minitEl.style.textShadow = minitDigitalGlowOpacity > 0 ? `0 0 10px #993399, 0 0 20px rgba(153, 51, 153, ${0.5 * minitDigitalGlowOpacity}), 0 0 ${20 * minitDigitalGlowOpacity}px #993399` : 'none';
     huorEl.style.textShadow = huorDigitalGlowOpacity > 0 ? `0 0 10px #FF0000, 0 0 ${20 * huorDigitalGlowOpacity}px #FF0000` : 'none';
 
     if (isHarmonyMode) {
@@ -469,7 +479,7 @@ function drawClockHands() {
     drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
 
     // Small solid blue hub square at the shared center of all three hands
-    const hubSize = Math.max(3, Math.round(canvas.width / 80));
+    const hubSize = Math.max(4, Math.round(canvas.width / 58));
     ctx.fillStyle = '#1E90FF';
     ctx.fillRect(centerX - hubSize / 2, centerY - hubSize / 2, hubSize, hubSize);
 

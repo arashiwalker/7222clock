@@ -131,7 +131,7 @@ canvas {
 }
 
 .glow-minit {
-  text-shadow: 0 0 10px #993399, 0 0 20px #993399;
+  text-shadow: 0 0 10px #993399, 0 0 20px rgba(153, 51, 153, 0.5), 0 0 20px #993399;
 }
 
 .glow-huor {
