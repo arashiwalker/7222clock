@@ -612,3 +612,27 @@ footer p:hover .copyright-tooltip {
   word-break: break-all;
   max-width: 280px;
 }
+
+
+/* Sound mute toggle — volume-mixer style SVG icons */
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 8px;
+  margin: 8px 0 5px;
+  line-height: 0;
+}
+
+.sound-toggle .sound-icon {
+  display: block;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.sound-toggle .sound-icon[hidden] {
+  display: none;
+}

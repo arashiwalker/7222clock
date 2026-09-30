@@ -134,9 +134,22 @@ function playHarmonySounds() {
     console.log('MirthaNode: Harmony mode: Played all interval sounds together');
 }
 
+function updateSoundToggleUI() {
+    const iconOn = toggleSoundBtn.querySelector('.sound-icon-on');
+    const iconOff = toggleSoundBtn.querySelector('.sound-icon-off');
+    if (iconOn && iconOff) {
+        iconOn.hidden = !isSoundOn;
+        iconOff.hidden = isSoundOn;
+    }
+    const label = isSoundOn ? 'Mute' : 'Unmute';
+    toggleSoundBtn.setAttribute('aria-label', label);
+    toggleSoundBtn.setAttribute('title', label);
+    toggleSoundBtn.setAttribute('aria-pressed', String(!isSoundOn));
+}
+
 toggleSoundBtn.addEventListener('click', () => {
     isSoundOn = !isSoundOn;
-    toggleSoundBtn.textContent = isSoundOn ? 'ðŸ”Š Sound: On' : 'ðŸ”‡ Sound: Off';
+    updateSoundToggleUI();
     console.log('MirthaNode: Sound toggled:', isSoundOn);
     if (isSoundOn && audioCtx.state === 'suspended') {
         audioCtx.resume().then(() => {
