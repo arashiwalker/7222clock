@@ -1,4 +1,4 @@
-﻿const canvas = document.getElementById('clockCanvas');
+const canvas = document.getElementById('clockCanvas');
 const ctx = canvas.getContext('2d');
 const toggleSoundBtn = document.getElementById('toggleSound');
 if (!ctx) {
@@ -209,7 +209,7 @@ function drawClockFace() {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, (clockRadius * 2) / 3 + 5, 0, 2 * Math.PI);
-    ctx.strokeStyle = `rgba(128, 0, 128, ${minitGlowOpacity})`;
+    ctx.strokeStyle = `rgba(153, 51, 153, ${minitGlowOpacity})`;
     ctx.lineWidth = 3;
     ctx.stroke();
 
@@ -227,7 +227,7 @@ function drawClockFace() {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, (clockRadius * 2) / 3, 0, 2 * Math.PI);
-    ctx.strokeStyle = '#800080';
+    ctx.strokeStyle = '#993399';
     ctx.lineWidth = 2;
     ctx.stroke();
 
@@ -263,7 +263,7 @@ function drawTicks() {
         ctx.beginPath();
         ctx.moveTo(tickXStart, tickYStart);
         ctx.lineTo(tickXEnd, tickYEnd);
-        ctx.strokeStyle = '#800080';
+        ctx.strokeStyle = '#993399';
         ctx.lineWidth = 2;
         ctx.stroke();
     }
@@ -307,7 +307,7 @@ function drawLabel(label, x, y, color) {
 
 function tipLabelOffset() {
     const fontSize = Math.max(17, canvas.width / 16);
-    return Math.max(16, Math.round(fontSize / 2 + 5));
+    return Math.max(13, Math.round(fontSize / 2 + 2));
 }
 
 function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime) {
@@ -361,7 +361,7 @@ function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, mini
 
     // Apply glow dynamically
     mirthaEl.style.textShadow = mirthaDigitalGlowOpacity > 0 ? `0 0 10px #00A1D6, 0 0 ${20 * mirthaDigitalGlowOpacity}px #00A1D6` : 'none';
-    minitEl.style.textShadow = minitDigitalGlowOpacity > 0 ? `0 0 10px #800080, 0 0 ${20 * minitDigitalGlowOpacity}px #800080` : 'none';
+    minitEl.style.textShadow = minitDigitalGlowOpacity > 0 ? `0 0 10px #993399, 0 0 ${20 * minitDigitalGlowOpacity}px #993399` : 'none';
     huorEl.style.textShadow = huorDigitalGlowOpacity > 0 ? `0 0 10px #FF0000, 0 0 ${20 * huorDigitalGlowOpacity}px #FF0000` : 'none';
 
     if (isHarmonyMode) {
@@ -449,7 +449,7 @@ function drawClockHands() {
     const huorRotation = ((huorTick - 1 + huorFraction) / totalHuors) * 360;
 
     const huor = drawHand(huorRotation, clockRadius / 3, '#FF0000', 3);
-    const minit = drawHand(minitRotation, (clockRadius * 2) / 3, '#800080', 3);
+    const minit = drawHand(minitRotation, (clockRadius * 2) / 3, '#993399', 3);
     const mirtha = drawHand(mirthaRotation, clockRadius, '#00A1D6', 3);
 
     const huorLabel = getLabel(huorTick, totalHuors);
@@ -461,12 +461,17 @@ function drawClockHands() {
     const minitLabel = getLabel(minitTick, totalMinits);
     const minitTextX = minit.xEnd + tipOut * Math.cos((minitRotation - 90) * (Math.PI / 180));
     const minitTextY = minit.yEnd + tipOut * Math.sin((minitRotation - 90) * (Math.PI / 180));
-    drawLabel(minitLabel, minitTextX, minitTextY, '#800080');
+    drawLabel(minitLabel, minitTextX, minitTextY, '#993399');
 
     const mirthaLabel = getLabel(mirthaTick, totalMirthas);
     const mirthaTextX = mirtha.xEnd + tipOut * Math.cos((mirthaRotation - 90) * (Math.PI / 180));
     const mirthaTextY = mirtha.yEnd + tipOut * Math.sin((mirthaRotation - 90) * (Math.PI / 180));
     drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
+
+    // Small solid blue hub square at the shared center of all three hands
+    const hubSize = Math.max(3, Math.round(canvas.width / 80));
+    ctx.fillStyle = '#1E90FF';
+    ctx.fillRect(centerX - hubSize / 2, centerY - hubSize / 2, hubSize, hubSize);
 
     updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime);
 }
