@@ -479,8 +479,8 @@ function drawClockHands() {
     drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
 
     // Small solid blue hub square at the shared center of all three hands
-    const hubSize = Math.max(4, Math.round(canvas.width / 58));
-    ctx.fillStyle = '#1E90FF';
+    const hubSize = Math.max(4, Math.round(canvas.width / 52));
+    ctx.fillStyle = '#00A1D6';
     ctx.fillRect(centerX - hubSize / 2, centerY - hubSize / 2, hubSize, hubSize);
 
     updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime);
