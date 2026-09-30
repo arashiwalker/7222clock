@@ -614,25 +614,36 @@ footer p:hover .copyright-tooltip {
 }
 
 
-/* Sound mute toggle — volume-mixer style SVG icons */
+/* Sound mute toggle — volume icons + Sound On/Off label */
 .sound-toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
-  padding: 8px;
+  gap: 8px;
+  width: auto;
+  min-height: 44px;
+  padding: 8px 14px;
   margin: 8px 0 5px;
-  line-height: 0;
+  line-height: 1.2;
 }
 
 .sound-toggle .sound-icon {
   display: block;
   width: 22px;
   height: 22px;
+  flex-shrink: 0;
   pointer-events: none;
 }
 
 .sound-toggle .sound-icon[hidden] {
   display: none;
+}
+
+.sound-toggle .sound-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
 }

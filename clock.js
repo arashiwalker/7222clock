@@ -22,7 +22,7 @@ async function loadSound(url) {
     }
 }
 
-function initializeAudioContext() {
+function ensureAudioContext() {
     if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         console.log('MirthaNode: AudioContext initialized');
@@ -33,7 +33,12 @@ function initializeAudioContext() {
             console.error('MirthaNode: Failed to load singing_bowl.wav:', err);
         });
     }
-    if (audioCtx.state === 'suspended') {
+    return audioCtx;
+}
+
+function initializeAudioContext() {
+    ensureAudioContext();
+    if (audioCtx.state === 'suspended' && isSoundOn) {
         audioCtx.resume().then(() => {
             console.log('MirthaNode: AudioContext resumed');
             if (isSoundOn) {
@@ -59,8 +64,11 @@ setupAudioContextResume();
 function playMirthaSound() {
     if (!isSoundOn) return;
     try {
-        if (!audioCtx || audioCtx.state === 'suspended') {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        ensureAudioContext();
+        if (audioCtx.state === 'suspended') {
+            // Outside a user gesture this may no-op; toggle click resumes.
+            audioCtx.resume().catch(() => {});
+            return;
         }
         if (singingBowlBuffer) {
             const source = audioCtx.createBufferSource();
@@ -92,8 +100,10 @@ function playMirthaSound() {
 function playChime(note, duration = 0.1, isTriad = false) {
     if (!isSoundOn) return;
     try {
-        if (!audioCtx || audioCtx.state === 'suspended') {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        ensureAudioContext();
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+            return;
         }
         if (isTriad) {
             const notes = [277.18, 349.23, 415.30];
@@ -137,26 +147,38 @@ function playHarmonySounds() {
 function updateSoundToggleUI() {
     const iconOn = toggleSoundBtn.querySelector('.sound-icon-on');
     const iconOff = toggleSoundBtn.querySelector('.sound-icon-off');
+    const labelEl = toggleSoundBtn.querySelector('.sound-label');
     if (iconOn && iconOff) {
         iconOn.hidden = !isSoundOn;
         iconOff.hidden = isSoundOn;
     }
-    const label = isSoundOn ? 'Mute' : 'Unmute';
+    const label = isSoundOn ? 'Sound On' : 'Sound Off';
+    if (labelEl) labelEl.textContent = label;
     toggleSoundBtn.setAttribute('aria-label', label);
     toggleSoundBtn.setAttribute('title', label);
     toggleSoundBtn.setAttribute('aria-pressed', String(!isSoundOn));
 }
 
-toggleSoundBtn.addEventListener('click', () => {
+toggleSoundBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
     isSoundOn = !isSoundOn;
     updateSoundToggleUI();
     console.log('MirthaNode: Sound toggled:', isSoundOn);
-    if (isSoundOn && audioCtx.state === 'suspended') {
-        audioCtx.resume().then(() => {
-            console.log('MirthaNode: AudioContext resumed after toggle');
-        }).catch(err => console.error('MirthaNode: Failed to resume AudioContext:', err));
+    ensureAudioContext();
+    if (isSoundOn) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().then(() => {
+                console.log('MirthaNode: AudioContext resumed after unmute');
+            }).catch(err => console.error('MirthaNode: Failed to resume AudioContext:', err));
+        }
+    } else if (audioCtx.state === 'running') {
+        audioCtx.suspend().then(() => {
+            console.log('MirthaNode: AudioContext suspended after mute');
+        }).catch(err => console.error('MirthaNode: Failed to suspend AudioContext:', err));
     }
 });
+
+updateSoundToggleUI();
 
 let clockRadius, centerX, centerY;
 function resizeCanvas() {
