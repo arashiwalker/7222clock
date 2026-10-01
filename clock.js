@@ -352,7 +352,7 @@ function drawLabel(label, x, y, color) {
 
 function tipLabelOffset() {
     const fontSize = Math.max(17, canvas.width / 16);
-    return Math.max(13, Math.round(fontSize / 2 + 2));
+    return Math.max(15, Math.round(fontSize / 2 + 4));
 }
 
 function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime) {
@@ -514,7 +514,7 @@ function drawClockHands() {
     drawLabel(mirthaLabel, mirthaTextX, mirthaTextY, '#00A1D6');
 
     // Small solid blue hub square at the shared center of all three hands
-    const hubSize = Math.max(4, Math.round(canvas.width / 52));
+    const hubSize = Math.max(4, Math.round(canvas.width / 47));
     ctx.fillStyle = '#00A1D6';
     ctx.fillRect(centerX - hubSize / 2, centerY - hubSize / 2, hubSize, hubSize);
 
