@@ -352,7 +352,7 @@ function drawLabel(label, x, y, color) {
 
 function tipLabelOffset() {
     const fontSize = Math.max(17, canvas.width / 16);
-    return Math.max(15, Math.round(fontSize / 2 + 4));
+    return Math.max(17, Math.round(fontSize / 2 + 4));
 }
 
 function updateDigitalClock(mirthaTick, minitTick, huorTick, mirthaChanged, minitChanged, huorChanged, isHarmonyMode, elapsedTime) {
